@@ -1,6 +1,7 @@
 package com.butcher.nonogram;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.tools.javac.util.ArrayUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -91,4 +92,40 @@ class NonogramSolver {
     private Board board;
     private int size;
 
+    static CellValue[] solveLine(int[] constraints, CellValue[] line, int boardSize) {
+        CellValue[] solution = line; //need array copy?
+
+        int spacesNeeded = boardSize - Arrays.stream(constraints).sum();
+
+        return solution;
+    }
+
+    //find potential solutions for a nonogram line
+    static CellValue[][] findSolutions(int[] constraints, int boardSize){
+        boolean hasInnerBlankSpace = !contains(constraints,0);
+
+        int numOuterSpaces()
+
+        if(hasInnerBlankSpace){
+
+        }
+    }
+
+    static boolean contains(int[] array, int value){
+        for(int el : array){
+            if(el == value){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void setSize(int size) {
+        board = new Board();
+        board.setSize(size);
+    }
+
+    void printBoard(PrintStream p) {
+        p.println(board.toString());
+    }
 }

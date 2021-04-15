@@ -5,15 +5,17 @@ import java.util.List;
 public interface IBoard {
     void setSize(int size);
 
-    CellValue[] getRow(int rowNum);
-
-    List<Integer> setRow(int rowNum, Cell[] row);
+    CellValue getCell(int x, int y);
 
     boolean setCell(int x, int y, CellValue val);
 
+    CellValue[] getRow(int rowNum);
+
+    boolean setRow(int rowNum, CellValue[] row);
+
     CellValue[] getCol(int colNum);
 
-    boolean setCol(int colNum, Cell[] col);
+    boolean setCol(int colNum, CellValue[] col);
 
     @Override
     String toString();

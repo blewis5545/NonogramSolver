@@ -1,15 +1,26 @@
 package com.butcher.nonogram;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Board implements IBoard {
-    private int size;
-
     private Cell[][] cells;
 
-    @Override
+    @Getter
+    private int size;
+
+    @Getter
+    @Setter
+    private int[][] rowConstraints; //consists of 2 numbers for each row. e.g. [2,1] means 2 blocks, then a space, then 1 filled in
+
+    @Getter
+    @Setter
+    private int[][] columnConstraints; //same as rowConstraints
+
     public void setSize(int size) {
         this.size = size;
         cells = new Cell[size][size];
@@ -20,17 +31,13 @@ public class Board implements IBoard {
         }
     }
 
-    @Override
-    public CellValue[] getRow(int rowNum) {
-        //hard copy to guarantee board integrity
-        int numElements = cells[rowNum].length;
-        CellValue[] row = new CellValue[numElements];
-
-        for (int i = 0; i < numElements; i++) {
-            row[i] = cells[rowNum][i].getValue();
+    public CellValue getCell(int x, int y){
+        if ((x >= 0) && (x < size)) {
+            if ((y >= 0) && (y < size)) {
+                return cells[y][x].getValue();
+            }
         }
-
-        return row;
+        return null;
     }
 
     //attempt to change a cell's value. return whether or not it was successful
@@ -45,65 +52,59 @@ public class Board implements IBoard {
         return false;
     }
 
-    /*
-    @Override
-    public List<Integer> setRow(int rowNum, Cell[] row) {
-        List<Integer> changes = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            if (row[i].isConfirmed()
-                    && row[i].getValue() != CellValue.UNKNOWN
-                    && cells[rowNum * size + i] != row[i]) {
-                cells[rowNum * size + i] = row[i];
-                changes.add(i);
-            }
-        }
-        return changes;
-    }*/
-    public boolean setRow(int rowNum, CellValue[] values) {
-        try {
-            for (int i = 0; i < size; i++) {
-                cells[rowNum][i].setValue(values[i]);
-            }
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            return false;
-        }
-        return true;
-    }
+    public CellValue[] getRow(int rowNum) {
+        int numElements = cells[rowNum].length;
+        CellValue[] row = new CellValue[numElements];
 
-    @Override
-    public Cell[] getCol(int colNum) {
-        //hard copy to guarantee board integrity
-        int numElements = cells.length;
-        Cell[] col = new Cell[numElements];
-
-        for (int i = 0; i < numelements; i++) {
-            col[i] = cells[i][colNum];
+        for (int i = 0; i < numElements; i++) {
+            row[i] = getCell(i,rowNum); //rowNum == y coordinate
         }
-
-        System.arraycopy(cells[rowNum], 0, row, 0, numElements);
 
         return row;
     }
 
-    @Override
-    public List<Integer> setCol(int colNum, Cell[] col) {
-        List<Integer> changes = new ArrayList<>();
+    //sets the values of an entire row
+    public boolean setRow(int rowNum, CellValue[] values) {
+        List<Boolean> results = new ArrayList<>();
+
         for (int i = 0; i < size; i++) {
-            if (col[i].isConfirmed() && col[i].getValue() != CellValue.UNKNOWN && cells[i * size + colNum] != col[i]) {
-                cells[i * size + colNum] = col[i];
-                changes.add(i);
-            }
+            results.add(setCell(i, rowNum, values[i])); //rowNum == y coordinate
         }
-        return changes;
+
+        return results.stream()
+            .distinct()
+            .count() == 1;
+    }
+
+    public CellValue[] getCol(int colNum) {
+        int numElements = cells.length;
+        CellValue[] column = new CellValue[numElements];
+
+        for (int i=0;i<numElements;i++){
+            column[i] = getCell(colNum,i); // colNum == x coordinate
+        }
+
+        return column;
+    }
+
+    public boolean setCol(int colNum, CellValue[] values) {
+        List<Boolean> results = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            results.add(setCell(colNum, i, values[i])); //rowNum == y coordinate
+        }
+
+        return results.stream()
+                .distinct()
+                .count() == 1;
     }
 
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (int r = 0; r < size; r++) {
-            for (int c = 0; c < size; c++) {
-                s.append(cells[r * size + c].getValue().value);
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                s.append(getCell(x,y).value);
             }
             s.append("\r\n");
         }
