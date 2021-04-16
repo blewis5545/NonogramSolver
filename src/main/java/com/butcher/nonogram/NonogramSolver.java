@@ -145,7 +145,11 @@ class NonogramSolver {
         }
 
         boolean constraintsRequireInnerSpaces = (constraints[0] != 0) && (constraints[1] != 0);
-        if (!constraintsRequireInnerSpaces && innerSpaces <= 0) {
+        if (!constraintsRequireInnerSpaces && innerSpaces != 0) {
+            return null;
+        }
+
+        if(constraintsRequireInnerSpaces && innerSpaces == 0){
             return null;
         }
 
