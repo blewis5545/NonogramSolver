@@ -101,19 +101,55 @@ class NonogramSolver {
     }
 
     //find potential solutions for a nonogram line
-    static CellValue[][] findSolutions(int[] constraints, int boardSize){
-        boolean hasInnerBlankSpace = !contains(constraints,0);
+    static CellValue[][] findSolutions(int[] constraints, int boardSize) {
+        //we can't have more filled in squares than spaces on the board
+        int numSquares = Arrays.stream(constraints).sum();
+        if (numSquares > boardSize) {
+            return null;
+        }
 
-        int numOuterSpaces()
+        int numOuterSpaces = boardSize - numSquares;
 
-        if(hasInnerBlankSpace){
-
+        boolean hasInteriorBlanks = !contains(constraints, 0);
+        if (!hasInteriorBlanks) {
+            return singleConstraintConfigurations(numSquares, numOuterSpaces);
+        }else{
+            
         }
     }
 
-    static boolean contains(int[] array, int value){
-        for(int el : array){
-            if(el == value){
+    //find valid configurations for a single row or column's constraints, given that there is only one constraint
+    private static CellValue[][] singleConstraintConfigurations(int requiredSquares, int outerSpaces) {
+        List<CellValue[]> results = new ArrayList<>();
+
+        for (int i = 0; i < outerSpaces; i++) {
+            List<CellValue> item = new ArrayList<>();
+
+            //# blanks before squares
+            for (int a = 0; a < i; a++) {
+                item.add(CellValue.OPEN);
+            }
+
+            //# filled in squares
+            for (int b = 0; b < requiredSquares; b++) {
+                item.add(CellValue.FILLED);
+            }
+
+            //# blanks after squares
+            int remainingSpaces = outerSpaces - i - requiredSquares;
+            for (int c = 0; c < remainingSpaces; c++) {
+                item.add(CellValue.OPEN);
+            }
+
+            results.add(item.toArray(new CellValue[0]));
+        }
+
+        return results.toArray(new CellValue[0][0]);
+    }
+
+    static boolean contains(int[] array, int value) {
+        for (int el : array) {
+            if (el == value) {
                 return true;
             }
         }
