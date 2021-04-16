@@ -1,7 +1,6 @@
 package com.butcher.nonogram;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.tools.javac.util.ArrayUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -101,50 +100,85 @@ class NonogramSolver {
     }
 
     //find potential solutions for a nonogram line
-    static CellValue[][] findSolutions(int[] constraints, int boardSize) {
+    static CellValue[][] findLineSolutions(int[] constraints, int boardSize) {
         //we can't have more filled in squares than spaces on the board
         int numSquares = Arrays.stream(constraints).sum();
         if (numSquares > boardSize) {
             return null;
         }
 
-        int numOuterSpaces = boardSize - numSquares;
-
         boolean hasInteriorBlanks = !contains(constraints, 0);
         if (!hasInteriorBlanks) {
-            return singleConstraintConfigurations(numSquares, numOuterSpaces);
-        }else{
-            
+            return singleConstraintConfigurations(constraints, boardSize);
+        } else {
+            return null; //TODO: add double constraint handler here
         }
     }
 
     //find valid configurations for a single row or column's constraints, given that there is only one constraint
-    private static CellValue[][] singleConstraintConfigurations(int requiredSquares, int outerSpaces) {
+    private static CellValue[][] singleConstraintConfigurations(int[] constraints, int boardSize) {
         List<CellValue[]> results = new ArrayList<>();
+        int outerSpaces = boardSize - Arrays.stream(constraints).sum();
+        if(outerSpaces < 0){
+            return null;
+        }
 
         for (int i = 0; i < outerSpaces; i++) {
             List<CellValue> item = new ArrayList<>();
-
-            //# blanks before squares
-            for (int a = 0; a < i; a++) {
-                item.add(CellValue.OPEN);
-            }
-
-            //# filled in squares
-            for (int b = 0; b < requiredSquares; b++) {
-                item.add(CellValue.FILLED);
-            }
-
-            //# blanks after squares
-            int remainingSpaces = outerSpaces - i - requiredSquares;
-            for (int c = 0; c < remainingSpaces; c++) {
-                item.add(CellValue.OPEN);
-            }
-
-            results.add(item.toArray(new CellValue[0]));
+            results.add(buildLine(constraints, boardSize, i, 0));
         }
 
         return results.toArray(new CellValue[0][0]);
+    }
+
+    static CellValue[][] doubleConstraintConfigurations(int[] constraint, int boardSize) {
+        List<CellValue[]> results = new ArrayList<>();
+        //TODO: Create handling for doubly constrained lines
+        return null;
+    }
+
+    public static CellValue[] buildLine(int[] constraints, int boardSize, int leftPadding, int innerSpaces) {
+        int filledInSquares = Arrays.stream(constraints).sum();
+        int totalSquares = filledInSquares + innerSpaces + leftPadding;
+        if ((totalSquares > boardSize) || (totalSquares < 0)) {
+            return null;
+        }
+
+        boolean constraintsRequireInnerSpaces = (constraints[0] != 0) && (constraints[1] != 0);
+        if (!constraintsRequireInnerSpaces && innerSpaces <= 0) {
+            return null;
+        }
+
+        //handle empty spaces to the left of the first filled in square
+        List<CellValue> line = new ArrayList<>();
+        for (int i = 0; i < leftPadding; i++) {
+            line.add(CellValue.OPEN);
+        }
+
+        //build filled in squares
+        if (constraintsRequireInnerSpaces) {
+            line.addAll(buildSequence(CellValue.FILLED, constraints[0]));
+
+            line.addAll(buildSequence(CellValue.OPEN, innerSpaces));
+
+            line.addAll(buildSequence(CellValue.FILLED, constraints[1]));
+        } else {
+            line.addAll(buildSequence(CellValue.FILLED, filledInSquares));
+        }
+
+        int remainingSpaces = boardSize - totalSquares;
+        line.addAll(buildSequence(CellValue.OPEN, remainingSpaces));
+
+        return line.toArray(new CellValue[0]);
+    }
+
+    //construct a repeating sequence of squares
+    private static List<CellValue> buildSequence(CellValue value, int repetitions) {
+        List<CellValue> results = new ArrayList<>();
+        for (int i = 0; i < repetitions; i++) {
+            results.add(value);
+        }
+        return results;
     }
 
     static boolean contains(int[] array, int value) {

@@ -31,10 +31,27 @@ class NonogramSolverTest {
 
         int[] input = {1, 3};
 
-        Cell[] result = NonogramSolver.solveLine(input, getTestRow(5));
+//        Cell[] result = NonogramSolver.solveLine(input, getTestRow(5));
 
         //assertArrayEquals(expected, result);
 
+    }
+
+    @Test
+    void buildLine_withSingleConstraint(){
+        int boardSize = 5;
+        CellValue[] expected = new CellValue[]{
+            CellValue.FILLED,
+            CellValue.FILLED,
+            CellValue.FILLED,
+            CellValue.FILLED,
+            CellValue.OPEN
+        };
+        int[] constraints = new int[]{4,0};
+
+        CellValue[] result = NonogramSolver.buildLine(constraints,boardSize,1,0);
+
+        assertArrayEquals(expected,result,"");
     }
 
     private Cell[] getTestRow(int size) {
@@ -49,7 +66,6 @@ class NonogramSolverTest {
         Cell[] row = new Cell[size];
         for (int i = 0; i < row.length; i++) {
             row[i] = new Cell();
-            row[i].setConfirmed(true);
         }
         return row;
     }

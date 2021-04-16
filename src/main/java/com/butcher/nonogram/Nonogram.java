@@ -12,13 +12,12 @@ import java.util.Arrays;
 @SpringBootApplication
 public class Nonogram {
     public static void main(String[] args) {
-        try(InputStream in=Thread.currentThread().getContextClassLoader().getResourceAsStream("input.json")){
-            NonogramSolver solver = new ObjectMapper().readValue(in, NonogramSolver.class);
-            solver.getBoard().setRow(3, test());
-            solver.solve();
-            solver.printBoard(System.out);
-        }
-        catch(Exception e){
+        try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("input.json")) {
+//            NonogramSolver solver = new ObjectMapper().readValue(in, NonogramSolver.class);
+//            solver.getBoard().setRow(3, test());
+//            solver.solve();
+//            solver.printBoard(System.out);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -29,7 +28,7 @@ public class Nonogram {
             row[i] = new Cell();
         }
         row[3].setValue(CellValue.FILLED);
-        row[3].setConfirmed(true);
+
         return row;
     }
 }
