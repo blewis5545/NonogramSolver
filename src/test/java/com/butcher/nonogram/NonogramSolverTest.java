@@ -67,21 +67,19 @@ class NonogramSolverTest {
 
     @Test
     void tryLineSolution_withValidInput() {
-        int boardSize = 5;
         int[] constraints = new int[]{2, 2};
         CellValue[] input = buildInput("11011");
 
-        boolean result = NonogramSolver.isLineSolution(constraints, boardSize, input);
+        boolean result = NonogramSolver.isLineSolution(constraints, input);
         Assertions.assertTrue(result);
     }
 
     @Test
     void tryLineSolution_withBadConstraints() {
-        int boardSize = 6;
         int[] constraints = new int[]{1, 1, 1};
         CellValue[] input = buildInput("11011");
 
-        boolean result = NonogramSolver.isLineSolution(constraints, boardSize, input);
+        boolean result = NonogramSolver.isLineSolution(constraints, input);
         Assertions.assertFalse(result);
     }
 

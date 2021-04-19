@@ -141,7 +141,7 @@ class NonogramSolver {
         return null;
     }
 
-    static boolean isLineSolution(int[] constraints, int boardSize, CellValue[] attempt) {
+    static boolean isLineSolution(int[] constraints, CellValue[] attempt) {
         String attemptString = rowToString(attempt);
         String patternString = "0*"; //build a regex string to check the row
         for (int i = 0; i < constraints.length - 1; i++) {
@@ -151,7 +151,7 @@ class NonogramSolver {
         patternString += "1{" + constraints[constraints.length - 1] + "}";
         patternString += "0*";
 
-        return Pattern.matches(patternString,attemptString);
+        return Pattern.matches(patternString, attemptString);
     }
 
     public static CellValue[] buildLine(int[] constraints, int[] spacing, int boardSize) {
@@ -207,12 +207,12 @@ class NonogramSolver {
         return false;
     }
 
-    static String rowToString(CellValue[] row){
+    static String rowToString(CellValue[] row) {
         String result = "";
-        for(CellValue el : row){
-            if(el == CellValue.FILLED){
+        for (CellValue el : row) {
+            if (el == CellValue.FILLED) {
                 result += "1";
-            }else{
+            } else {
                 result += "0";
             }
         }
