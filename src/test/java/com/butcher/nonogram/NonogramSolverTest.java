@@ -1,12 +1,8 @@
 package com.butcher.nonogram;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class NonogramSolverTest {
 
@@ -23,35 +19,13 @@ class NonogramSolverTest {
     }
 
     @Test
-    void solveLine() {
-        Cell[] expected = getAllConfirmedTestRow(5);
-        expected[0].setValue(CellValue.FILLED);
-        expected[1].setValue(CellValue.OPEN);
-        expected[2].setValue(CellValue.FILLED);
-        expected[3].setValue(CellValue.FILLED);
-        expected[4].setValue(CellValue.FILLED);
-
-        int[] input = {1, 3};
-
-//        Cell[] result = NonogramSolver.solveLine(input, getTestRow(5));
-
-        //assertArrayEquals(expected, result);
-
-    }
-
-    @Test
     void buildLine_withSingleConstraint() {
         int boardSize = 5;
-        CellValue[] expected = new CellValue[]{
-                CellValue.FILLED,
-                CellValue.FILLED,
-                CellValue.FILLED,
-                CellValue.FILLED,
-                CellValue.OPEN
-        };
-        int[] constraints = new int[]{4, 0};
+        CellValue[] expected = buildInput("11110");
+        int[] constraints = new int[]{4};
+        int[] spacing = new int[]{0, 1};
 
-        CellValue[] result = NonogramSolver.buildLine(constraints, boardSize, 0, 0);
+        CellValue[] result = NonogramSolver.buildLine(constraints, spacing, boardSize);
 
         assertArrayEquals(expected, result);
     }
@@ -59,16 +33,11 @@ class NonogramSolverTest {
     @Test
     void buildLine_withDoubleConstraint() {
         int boardSize = 5;
-        CellValue[] expected = new CellValue[]{
-                CellValue.FILLED,
-                CellValue.FILLED,
-                CellValue.OPEN,
-                CellValue.FILLED,
-                CellValue.FILLED
-        };
+        CellValue[] expected = buildInput("11011");
         int[] constraints = new int[]{2, 2};
+        int[] spacing = new int[]{0, 1, 0};
 
-        CellValue[] result = NonogramSolver.buildLine(constraints, boardSize, 0, 1);
+        CellValue[] result = NonogramSolver.buildLine(constraints, spacing, boardSize);
 
         assertArrayEquals(expected, result);
     }
@@ -77,21 +46,57 @@ class NonogramSolverTest {
     void buildLine_withBadConstraints() {
         int boardSize = 5;
 
-        int[] constraints = new int[]{6, 0};
+        int[] constraints = new int[]{6, 1};
+        int[] spacing = new int[]{0, 1, 0};
 
-        CellValue[] result = NonogramSolver.buildLine(constraints, boardSize, 0, 0);
+        CellValue[] result = NonogramSolver.buildLine(constraints, spacing, boardSize);
 
-        assertEquals(null, result);
+        assertNull(result);
     }
 
     @Test
     void buildLine_withBadInnerSpacing() {
         int boardSize = 5;
         int[] constraints = new int[]{2, 2};
+        int[] spacing = new int[]{0, 18, 0};
 
-        CellValue[] result = NonogramSolver.buildLine(constraints, boardSize, 0, 3);
+        CellValue[] result = NonogramSolver.buildLine(constraints, spacing, boardSize);
 
-        assertEquals(null, result);
+        assertNull(result);
+    }
+
+    @Test
+    void tryLineSolution_withValidInput() {
+        int boardSize = 5;
+        int[] constraints = new int[]{2, 2};
+        CellValue[] input = buildInput("11011");
+
+        boolean result = NonogramSolver.isLineSolution(constraints, boardSize, input);
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    void tryLineSolution_withBadConstraints() {
+        int boardSize = 6;
+        int[] constraints = new int[]{1, 1, 1};
+        CellValue[] input = buildInput("11011");
+
+        boolean result = NonogramSolver.isLineSolution(constraints, boardSize, input);
+        Assertions.assertFalse(result);
+    }
+
+    private CellValue[] buildInput(String input) {
+        CellValue[] result = new CellValue[input.length()];
+
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == '1') {
+                result[i] = CellValue.FILLED;
+            } else {
+                result[i] = CellValue.OPEN;
+            }
+        }
+
+        return result;
     }
 
     private Cell[] getTestRow(int size) {

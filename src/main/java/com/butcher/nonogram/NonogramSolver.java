@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.io.PrintStream;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
 @Getter
@@ -111,7 +113,7 @@ class NonogramSolver {
         if (!hasInteriorBlanks) {
             return singleConstraintConfigurations(constraints, boardSize);
         } else {
-            return null; //TODO: add double constraint handler here
+            return null; //TODO: add multiple constraint handler here
         }
     }
 
@@ -119,59 +121,60 @@ class NonogramSolver {
     private static CellValue[][] singleConstraintConfigurations(int[] constraints, int boardSize) {
         List<CellValue[]> results = new ArrayList<>();
         int outerSpaces = boardSize - Arrays.stream(constraints).sum();
-        if(outerSpaces < 0){
+        if (outerSpaces < 0) {
             return null;
         }
 
-        for (int i = 0; i < outerSpaces; i++) {
-            List<CellValue> item = new ArrayList<>();
-            results.add(buildLine(constraints, boardSize, i, 0));
+        //shift the single run of filled squares from left to right in each iteration
+        for (int i = 0; i <= outerSpaces; i++) {
+            int[] spaceConstraints = new int[]{i, outerSpaces - i};
+
+            results.add(buildLine(constraints, spaceConstraints, boardSize));
         }
 
         return results.toArray(new CellValue[0][0]);
     }
 
-    static CellValue[][] doubleConstraintConfigurations(int[] constraint, int boardSize) {
+    static CellValue[][] multipleConstraintConfigurations(int[] constraints, int boardSize) {
         List<CellValue[]> results = new ArrayList<>();
-        //TODO: Create handling for doubly constrained lines
+        //TODO: Create handling for multiple constraints
         return null;
     }
 
-    public static CellValue[] buildLine(int[] constraints, int boardSize, int leftPadding, int innerSpaces) {
-        int filledInSquares = Arrays.stream(constraints).sum();
-        int totalSquares = filledInSquares + innerSpaces + leftPadding;
+    static boolean isLineSolution(int[] constraints, int boardSize, CellValue[] attempt) {
+        String attemptString = rowToString(attempt);
+        String patternString = "0*"; //build a regex string to check the row
+        for (int i = 0; i < constraints.length - 1; i++) {
+            patternString += "1{" + constraints[i] + "}";
+            patternString += "0+";
+        }
+        patternString += "1{" + constraints[constraints.length - 1] + "}";
+        patternString += "0*";
+
+        return Pattern.matches(patternString,attemptString);
+    }
+
+    public static CellValue[] buildLine(int[] constraints, int[] spacing, int boardSize) {
+        int totalSquares = Arrays.stream(constraints).sum() + Arrays.stream(spacing).sum();
         if ((totalSquares > boardSize) || (totalSquares < 0)) {
             return null;
         }
 
-        boolean constraintsRequireInnerSpaces = (constraints[0] != 0) && (constraints[1] != 0);
-        if (!constraintsRequireInnerSpaces && innerSpaces != 0) {
-            return null;
-        }
-
-        if(constraintsRequireInnerSpaces && innerSpaces == 0){
+        //there should be a spacing value on each side of a constraint value. Even if it is 0.
+        // They should "zip" together in the final row. So #constraints == #spacing - 1
+        int difference = spacing.length - constraints.length;
+        if (difference != 1) {
             return null;
         }
 
         //handle empty spaces to the left of the first filled in square
-        List<CellValue> line = new ArrayList<>();
-        for (int i = 0; i < leftPadding; i++) {
-            line.add(CellValue.OPEN);
+        List<CellValue> line = new ArrayList<>(buildSequence(CellValue.OPEN, spacing[0]));
+
+        //handle the rest
+        for (int i = 1; i < spacing.length; i++) {
+            line.addAll(buildSequence(CellValue.FILLED, constraints[i - 1]));
+            line.addAll(buildSequence(CellValue.OPEN, spacing[i]));
         }
-
-        //build filled in squares
-        if (constraintsRequireInnerSpaces) {
-            line.addAll(buildSequence(CellValue.FILLED, constraints[0]));
-
-            line.addAll(buildSequence(CellValue.OPEN, innerSpaces));
-
-            line.addAll(buildSequence(CellValue.FILLED, constraints[1]));
-        } else {
-            line.addAll(buildSequence(CellValue.FILLED, filledInSquares));
-        }
-
-        int remainingSpaces = boardSize - totalSquares;
-        line.addAll(buildSequence(CellValue.OPEN, remainingSpaces));
 
         return line.toArray(new CellValue[0]);
     }
@@ -185,6 +188,16 @@ class NonogramSolver {
         return results;
     }
 
+    static int count(int[] array, int value) {
+        int count = 0;
+        for (int el : array) {
+            if (el == value) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     static boolean contains(int[] array, int value) {
         for (int el : array) {
             if (el == value) {
@@ -192,6 +205,18 @@ class NonogramSolver {
             }
         }
         return false;
+    }
+
+    static String rowToString(CellValue[] row){
+        String result = "";
+        for(CellValue el : row){
+            if(el == CellValue.FILLED){
+                result += "1";
+            }else{
+                result += "0";
+            }
+        }
+        return result;
     }
 
     void setSize(int size) {
