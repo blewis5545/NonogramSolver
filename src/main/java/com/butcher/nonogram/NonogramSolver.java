@@ -11,10 +11,43 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 class NonogramSolver {
-    @JsonIgnore
-    private Board board;
 
-    static CellValue[] solveLine()
+    //Each row will intersect every column, and vice versa. This means their constraints affect each other. Compare the
+    // possible solutions of the target line with the ones that intersect it. This method should return solutions for
+    // the targeted row that are valid against the intersecting rows.
+    // <lineIndex> is the index on which all intersecting lines will cross over the target line
+    static CellValue[][] solveLine(int[] targetLineConstraints, int[][] intersectingLineConstraints, int lineIndex, int boardSize) {
+        CellValue[][] selectedLineSolutions = findLineSolutions(targetLineConstraints, boardSize);
+
+        List<CellValue[][]> intersectingLineSolutions = new ArrayList<>();
+        for (int i = 0; i < intersectingLineConstraints.length; i++) {
+            int[] currentConstraint = intersectingLineConstraints[i];
+            intersectingLineSolutions.add(findIntersectionSolutions(targetLineConstraints, currentConstraint, i, lineIndex, boardSize));
+        }
+
+        //sift through the available solutions and find ones that satisfy both the target line and all other intersecting lines
+        
+    }
+
+    //find possible solutions for two intersecting lines.
+    // Return solutions for the first line that also satisfy the second.
+    static CellValue[][] findIntersectionSolutions(int[] firstLineConstraints, int[] secondLineConstraints, int firstIntersectIndex, int secondIntersectIndex, int boardSize) {
+        //solve both lines individually first
+        CellValue[][] firstSolutions = findLineSolutions(firstLineConstraints, boardSize);
+        CellValue[][] secondSolutions = findLineSolutions(secondLineConstraints, boardSize);
+
+        //look for solutions that have the same value at the intersection point
+        List<CellValue[]> solutions = new ArrayList<>();
+        for (int i = 0; i < firstSolutions.length; i++) {
+            for (int j = 0; j < secondSolutions.length; j++) {
+                if (firstSolutions[i][firstIntersectIndex] == secondSolutions[j][secondIntersectIndex]) {
+                    solutions.add(firstSolutions[i]);
+                }
+            }
+        }
+
+        return solutions.toArray(new CellValue[0][0]);
+    }
 
     //find potential solutions for a nonogram line
     static CellValue[][] findLineSolutions(int[] constraints, int boardSize) {
