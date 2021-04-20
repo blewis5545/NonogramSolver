@@ -66,7 +66,7 @@ class NonogramSolverTest {
     }
 
     @Test
-    void tryLineSolution_withValidInput() {
+    void isLineSolution_withValidInput() {
         int[] constraints = new int[]{2, 2};
         CellValue[] input = buildInput("11011");
 
@@ -75,7 +75,7 @@ class NonogramSolverTest {
     }
 
     @Test
-    void tryLineSolution_withBadConstraints() {
+    void isLineSolution_withBadConstraints() {
         int[] constraints = new int[]{1, 1, 1};
         CellValue[] input = buildInput("11011");
 
@@ -83,6 +83,7 @@ class NonogramSolverTest {
         Assertions.assertFalse(result);
     }
 
+    //HELPERS
     private CellValue[] buildInput(String input) {
         CellValue[] result = new CellValue[input.length()];
 

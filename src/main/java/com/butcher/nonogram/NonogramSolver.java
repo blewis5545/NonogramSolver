@@ -6,100 +6,15 @@ import lombok.Setter;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/*
 @Getter
 @Setter
 class NonogramSolver {
     @JsonIgnore
     private Board board;
-    private int size;
-    private int[][] rows;
-    private int[][] cols;
 
-    void solve() {
-        Set<Integer> rowChanges = new HashSet<>();
-        Set<Integer> colChanges = new HashSet<>();
-        for (int r = 0; r < size; r++) {
-            List<Integer> changes = board.setRow(
-                    r, solveLine(rows[r], board.getRow(r))
-            );
-            rowChanges.addAll(changes);
-        }
-        for (int c = 0; c < size; c++) {
-            List<Integer> changes = board.setCol(
-                    c, solveLine(cols[c], board.getCol(c))
-            );
-            colChanges.addAll(changes);
-        }
-
-        while (!rowChanges.isEmpty() || !colChanges.isEmpty()) {
-            for (int r = 0; r < colChanges.size(); r++) {
-                List<Integer> changes = board.setRow(
-                        r, solveLine(rows[r], board.getRow(r))
-                );
-                rowChanges.addAll(changes);
-            }
-            for (int c = 0; c < rowChanges.size(); c++) {
-                List<Integer> changes = board.setCol(
-                        c, solveLine(cols[c], board.getCol(c))
-                );
-                colChanges.addAll(changes);
-            }
-        }
-    }
-
-    //can only mark confirmed unknowns unless it makes a pass at the end.
-    static Cell[] solveLine(int[] values, Cell[] row) {
-        Cell[] solution = row; //need array copy?
-
-        int spacesNeeded = Arrays.stream(values).sum() + values.length;
-        int startingIdx = 0;
-        while (startingIdx < spacesNeeded-1) {
-            Cell[] working = solution; //need array copy?
-            for (int cell = 0; cell < row.length; cell++) {
-                //for ()
-            }
-            startingIdx++;
-        }
-        return solution;
-    }
-
-    static Cell[] lineHeuristics(int[] values, Cell[] row){
-        Cell[] result =
-        for (Cell c : row){
-
-        }
-
-
-    }
-
-    void setSize(int size) {
-        board = new Board();
-        board.setSize(size);
-    }
-
-    void printBoard(PrintStream p) {
-        p.println(board.toString());
-    }
-}*/
-
-@Getter
-@Setter
-class NonogramSolver {
-    @JsonIgnore
-    private Board board;
-    private int size;
-
-    static CellValue[] solveLine(int[] constraints, CellValue[] line, int boardSize) {
-        CellValue[] solution = line; //need array copy?
-
-        int spacesNeeded = boardSize - Arrays.stream(constraints).sum();
-
-        return solution;
-    }
+    static CellValue[] solveLine()
 
     //find potential solutions for a nonogram line
     static CellValue[][] findLineSolutions(int[] constraints, int boardSize) {
@@ -144,10 +59,12 @@ class NonogramSolver {
     static boolean isLineSolution(int[] constraints, CellValue[] attempt) {
         String attemptString = rowToString(attempt);
         String patternString = "0*"; //build a regex string to check the row
+
         for (int i = 0; i < constraints.length - 1; i++) {
             patternString += "1{" + constraints[i] + "}";
             patternString += "0+";
         }
+
         patternString += "1{" + constraints[constraints.length - 1] + "}";
         patternString += "0*";
 
@@ -185,6 +102,7 @@ class NonogramSolver {
         for (int i = 0; i < repetitions; i++) {
             results.add(value);
         }
+
         return results;
     }
 
@@ -195,6 +113,7 @@ class NonogramSolver {
                 count++;
             }
         }
+
         return count;
     }
 
@@ -204,6 +123,7 @@ class NonogramSolver {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -216,6 +136,7 @@ class NonogramSolver {
                 result += "0";
             }
         }
+
         return result;
     }
 
