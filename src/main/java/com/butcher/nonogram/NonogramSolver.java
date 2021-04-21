@@ -17,7 +17,7 @@ class NonogramSolver {
     // the targeted row that are valid against the intersecting rows.
     // <lineIndex> is the index on which all intersecting lines will cross over the target line
     static CellValue[][] solveLine(int[] targetLineConstraints, int[][] intersectingLineConstraints, int lineIndex, int boardSize) {
-        CellValue[][] selectedLineSolutions = findLineSolutions(targetLineConstraints, boardSize);
+        CellValue[][] targetLineSolutions = findLineSolutions(targetLineConstraints, boardSize);
 
         List<CellValue[][]> intersectingLineSolutions = new ArrayList<>();
         for (int i = 0; i < intersectingLineConstraints.length; i++) {
@@ -26,7 +26,13 @@ class NonogramSolver {
         }
 
         //sift through the available solutions and find ones that satisfy both the target line and all other intersecting lines
-        
+        for(CellValue[][] solutions : intersectingLineSolutions){
+            for(int i=0;i<targetLineSolutions.length;i++){
+                for(int j=0;j<solutions.length;j++){
+
+                }
+            }
+        }
     }
 
     //find possible solutions for two intersecting lines.
@@ -48,6 +54,18 @@ class NonogramSolver {
 
         return solutions.toArray(new CellValue[0][0]);
     }
+
+    //collect the n'th index of each line
+    static CellValue[] getCrossSection(CellValue[][] lines, int index){
+        CellValue[] result = new CellValue[lines[0].length];
+
+        for(int i=0;i<lines.length;i++){
+            result[i] = lines[i][index];
+        }
+
+        return result;
+    }
+
 
     //find potential solutions for a nonogram line
     static CellValue[][] findLineSolutions(int[] constraints, int boardSize) {
