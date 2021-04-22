@@ -25,14 +25,7 @@ class NonogramSolver {
             intersectingLineSolutions.add(findIntersectionSolutions(targetLineConstraints, currentConstraint, i, lineIndex, boardSize));
         }
 
-        //sift through the available solutions and find ones that satisfy both the target line and all other intersecting lines
-        for(CellValue[][] solutions : intersectingLineSolutions){
-            for(int i=0;i<targetLineSolutions.length;i++){
-                for(int j=0;j<solutions.length;j++){
-
-                }
-            }
-        }
+        
     }
 
     //find possible solutions for two intersecting lines.
@@ -79,7 +72,7 @@ class NonogramSolver {
         if (!hasInteriorBlanks) {
             return singleConstraintConfigurations(constraints, boardSize);
         } else {
-            return null; //TODO: add multiple constraint handler here
+            return multipleConstraintConfigurations(constraints,boardSize); //TODO: add multiple constraint handler here
         }
     }
 
@@ -157,6 +150,7 @@ class NonogramSolver {
         return results;
     }
 
+    //count instances of <value> in <array>
     static int count(int[] array, int value) {
         int count = 0;
         for (int el : array) {
@@ -178,6 +172,13 @@ class NonogramSolver {
         return false;
     }
 
+    static boolean allTrue(List<Boolean> list){
+        boolean oneValue = list.stream()
+                            .distinct()
+                            .count() == 1;
+        return oneValue && list.get(0);
+    }
+
     static String rowToString(CellValue[] row) {
         String result = "";
         for (CellValue el : row) {
@@ -189,14 +190,5 @@ class NonogramSolver {
         }
 
         return result;
-    }
-
-    void setSize(int size) {
-        board = new Board();
-        board.setSize(size);
-    }
-
-    void printBoard(PrintStream p) {
-        p.println(board.toString());
     }
 }
