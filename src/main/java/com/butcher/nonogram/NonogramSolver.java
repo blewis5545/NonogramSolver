@@ -16,7 +16,9 @@ class NonogramSolver {
     // possible solutions of the target line with the ones that intersect it. This method should return solutions for
     // the targeted row that are valid against the intersecting rows.
     // <lineIndex> is the index on which all intersecting lines will cross over the target line
-    static CellValue[][] solveLine(int[] targetLineConstraints, int[][] intersectingLineConstraints, int lineIndex, int boardSize) {
+    // This method finds all possible solutions for each intersecting line when compared against one
+    // perpendicular target line.
+    static CellValue[][][] findIntersectingSolutions(int[] targetLineConstraints, int[][] intersectingLineConstraints, int lineIndex, int boardSize) {
         CellValue[][] targetLineSolutions = findLineSolutions(targetLineConstraints, boardSize);
 
         List<CellValue[][]> intersectingLineSolutions = new ArrayList<>();
@@ -25,7 +27,7 @@ class NonogramSolver {
             intersectingLineSolutions.add(findIntersectionSolutions(targetLineConstraints, currentConstraint, i, lineIndex, boardSize));
         }
 
-        
+        return intersectingLineSolutions.toArray(new CellValue[0][0][0]);
     }
 
     //find possible solutions for two intersecting lines.
