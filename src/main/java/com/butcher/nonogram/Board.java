@@ -113,6 +113,38 @@ public class Board implements IBoard {
                 .count() == 1;
     }
 
+    //this will generate constraints that are valid for the given solution
+    private void buildConstraints() {
+        List<int[]> columns = new ArrayList<>();
+        List<int[]> rows = new ArrayList<>();
+
+        //read columns first
+        for (int i = 0; i < size; i++) {
+
+            for (CellValue square : this.getCol(i)) {
+
+            }
+        }
+    }
+
+    //find a set of constraints that are valid for a given line
+    private int[] findLineConstraints(CellValue[] line){
+        List<Integer> result = new ArrayList<>();
+        int cursor = 0;
+        int currentChain = 0;
+        int firstFilledIndex = -1;
+
+        for(int i=0;i<line.length;i++){
+            if(line[i] == CellValue.OPEN){
+
+                continue; //TODO: find a way to count the continuous runs of filled in squares
+            }else{
+                result.add(currentChain);
+                currentChain = 0;
+            }
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();

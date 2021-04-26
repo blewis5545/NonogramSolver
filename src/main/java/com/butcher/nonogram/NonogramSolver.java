@@ -12,6 +12,9 @@ import java.util.regex.Pattern;
 @Setter
 class NonogramSolver {
 
+
+
+
     //Each row will intersect every column, and vice versa. This means their constraints affect each other. Compare the
     // possible solutions of the target line with the ones that intersect it. This method should return solutions for
     // the targeted row that are valid against the intersecting rows.
@@ -24,7 +27,9 @@ class NonogramSolver {
         List<CellValue[][]> intersectingLineSolutions = new ArrayList<>();
         for (int i = 0; i < intersectingLineConstraints.length; i++) {
             int[] currentConstraint = intersectingLineConstraints[i];
-            intersectingLineSolutions.add(findIntersectionSolutions(targetLineConstraints, currentConstraint, i, lineIndex, boardSize));
+            intersectingLineSolutions.add(
+                    findIntersectionSolutions(targetLineConstraints, currentConstraint, i, lineIndex, boardSize)
+            );
         }
 
         return intersectingLineSolutions.toArray(new CellValue[0][0][0]);
@@ -51,10 +56,10 @@ class NonogramSolver {
     }
 
     //collect the n'th index of each line
-    static CellValue[] getCrossSection(CellValue[][] lines, int index){
+    static CellValue[] getCrossSection(CellValue[][] lines, int index) {
         CellValue[] result = new CellValue[lines[0].length];
 
-        for(int i=0;i<lines.length;i++){
+        for (int i = 0; i < lines.length; i++) {
             result[i] = lines[i][index];
         }
 
@@ -74,7 +79,7 @@ class NonogramSolver {
         if (!hasInteriorBlanks) {
             return singleConstraintConfigurations(constraints, boardSize);
         } else {
-            return multipleConstraintConfigurations(constraints,boardSize); //TODO: add multiple constraint handler here
+            return multipleConstraintConfigurations(constraints, boardSize); //TODO: add multiple constraint handler here
         }
     }
 
@@ -174,10 +179,10 @@ class NonogramSolver {
         return false;
     }
 
-    static boolean allTrue(List<Boolean> list){
+    static boolean allTrue(List<Boolean> list) {
         boolean oneValue = list.stream()
-                            .distinct()
-                            .count() == 1;
+                .distinct()
+                .count() == 1;
         return oneValue && list.get(0);
     }
 

@@ -3,7 +3,7 @@ package com.butcher.nonogram;
 import java.util.List;
 
 public interface IBoard {
-    void setSize(int size);
+    int getSize();
 
     CellValue getCell(int x, int y);
 
