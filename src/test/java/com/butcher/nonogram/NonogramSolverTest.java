@@ -83,6 +83,15 @@ class NonogramSolverTest {
         Assertions.assertFalse(result);
     }
 
+    @Test
+    void findLineConstraints_withValidInput(){
+        CellValue[] input = buildInput("00101111");
+        int[] expected = new int[]{1,4};
+        int[] result = NonogramSolver.findLineConstraints(input);
+
+        Assertions.assertArrayEquals(expected,result);
+    }
+
     //HELPERS
     private CellValue[] buildInput(String input) {
         CellValue[] result = new CellValue[input.length()];

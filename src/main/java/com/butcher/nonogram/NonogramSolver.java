@@ -12,8 +12,20 @@ import java.util.regex.Pattern;
 @Setter
 class NonogramSolver {
 
+    public static CellValue[][] solveBoard(Board input) {
+        //rows and their intersecting solutions will be linked by index
+        List<CellValue[]> rows = new ArrayList<>();
+        int[][] rowConstraints = input.getRowConstraints();
+        List<CellValue[][][]> solutionsPerRow = new ArrayList<>();
+
+        for (int i = 0; i < input.getRow(0).length; i++) {
+            rows.add(input.getRow(i));
+
+            solutionsPerRow.add(findIntersectingSolutions());
+        }
 
 
+    }
 
     //Each row will intersect every column, and vice versa. This means their constraints affect each other. Compare the
     // possible solutions of the target line with the ones that intersect it. This method should return solutions for
@@ -21,7 +33,7 @@ class NonogramSolver {
     // <lineIndex> is the index on which all intersecting lines will cross over the target line
     // This method finds all possible solutions for each intersecting line when compared against one
     // perpendicular target line.
-    static CellValue[][][] findIntersectingSolutions(int[] targetLineConstraints, int[][] intersectingLineConstraints, int lineIndex, int boardSize) {
+    public static CellValue[][][] findIntersectingSolutions(int[] targetLineConstraints, int[][] intersectingLineConstraints, int lineIndex, int boardSize) {
         CellValue[][] targetLineSolutions = findLineSolutions(targetLineConstraints, boardSize);
 
         List<CellValue[][]> intersectingLineSolutions = new ArrayList<>();
@@ -37,7 +49,7 @@ class NonogramSolver {
 
     //find possible solutions for two intersecting lines.
     // Return solutions for the first line that also satisfy the second.
-    static CellValue[][] findIntersectionSolutions(int[] firstLineConstraints, int[] secondLineConstraints, int firstIntersectIndex, int secondIntersectIndex, int boardSize) {
+    public static CellValue[][] findIntersectionSolutions(int[] firstLineConstraints, int[] secondLineConstraints, int firstIntersectIndex, int secondIntersectIndex, int boardSize) {
         //solve both lines individually first
         CellValue[][] firstSolutions = findLineSolutions(firstLineConstraints, boardSize);
         CellValue[][] secondSolutions = findLineSolutions(secondLineConstraints, boardSize);
@@ -56,7 +68,7 @@ class NonogramSolver {
     }
 
     //collect the n'th index of each line
-    static CellValue[] getCrossSection(CellValue[][] lines, int index) {
+    public static CellValue[] getCrossSection(CellValue[][] lines, int index) {
         CellValue[] result = new CellValue[lines[0].length];
 
         for (int i = 0; i < lines.length; i++) {
@@ -66,6 +78,40 @@ class NonogramSolver {
         return result;
     }
 
+    //find a set of constraints that are valid for a given line
+    public static int[] findLineConstraints(CellValue[] line) {
+        List<Integer> constraints = new ArrayList<>();
+        int currentChainLength = 0;
+        int firstFilledIndex = -1;
+
+        //finding the first filled index tells us a lot about the line, and if we don't find one
+        // we can short circuit execution
+        firstFilledIndex = Arrays.asList(line).indexOf(CellValue.FILLED);
+        if (firstFilledIndex == -1) {
+            return new int[]{0};
+        }
+
+        for (int i = firstFilledIndex; i < line.length; i++) {
+            if (line[i] == CellValue.FILLED && (i < (line.length - 1))) {
+                //finding filled squares just adds to the chain length until an empty square or
+                // the last square in a line
+                currentChainLength++;
+            } else if (line[i] == CellValue.OPEN && (currentChainLength != 0)) {
+                //close an existing chain
+                constraints.add(currentChainLength);
+                currentChainLength = 0;
+            } else if (line[i] == CellValue.FILLED) {
+                //close the last chain
+                currentChainLength++;
+                constraints.add(currentChainLength);
+            }
+        }
+
+        return constraints
+                .stream()
+                .mapToInt(Integer::valueOf)
+                .toArray();
+    }
 
     //find potential solutions for a nonogram line
     static CellValue[][] findLineSolutions(int[] constraints, int boardSize) {
@@ -79,7 +125,7 @@ class NonogramSolver {
         if (!hasInteriorBlanks) {
             return singleConstraintConfigurations(constraints, boardSize);
         } else {
-            return multipleConstraintConfigurations(constraints, boardSize); //TODO: add multiple constraint handler here
+            return multipleConstraintConfigurations(constraints, boardSize);
         }
     }
 
@@ -101,13 +147,13 @@ class NonogramSolver {
         return results.toArray(new CellValue[0][0]);
     }
 
-    static CellValue[][] multipleConstraintConfigurations(int[] constraints, int boardSize) {
+    public static CellValue[][] multipleConstraintConfigurations(int[] constraints, int boardSize) {
         List<CellValue[]> results = new ArrayList<>();
         //TODO: Create handling for multiple constraints
         return null;
     }
 
-    static boolean isLineSolution(int[] constraints, CellValue[] attempt) {
+    public static boolean isLineSolution(int[] constraints, CellValue[] attempt) {
         String attemptString = rowToString(attempt);
         String patternString = "0*"; //build a regex string to check the row
 
@@ -158,7 +204,7 @@ class NonogramSolver {
     }
 
     //count instances of <value> in <array>
-    static int count(int[] array, int value) {
+    public static int count(int[] array, int value) {
         int count = 0;
         for (int el : array) {
             if (el == value) {
@@ -169,7 +215,7 @@ class NonogramSolver {
         return count;
     }
 
-    static boolean contains(int[] array, int value) {
+    public static boolean contains(int[] array, int value) {
         for (int el : array) {
             if (el == value) {
                 return true;
@@ -179,14 +225,14 @@ class NonogramSolver {
         return false;
     }
 
-    static boolean allTrue(List<Boolean> list) {
+    public static boolean allTrue(List<Boolean> list) {
         boolean oneValue = list.stream()
                 .distinct()
                 .count() == 1;
         return oneValue && list.get(0);
     }
 
-    static String rowToString(CellValue[] row) {
+    public static String rowToString(CellValue[] row) {
         String result = "";
         for (CellValue el : row) {
             if (el == CellValue.FILLED) {

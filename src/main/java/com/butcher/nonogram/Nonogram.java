@@ -26,6 +26,8 @@ public class Nonogram {
 
             b.setRow(0, NonogramSolver.buildLine(new int[]{3},new int[]{0,2}, 5));
 
+        }catch(Exception ex){
+            System.err.println(ex.getMessage());
         }
     }
 
