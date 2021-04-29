@@ -16,12 +16,13 @@ class NonogramSolver {
         //rows and their intersecting solutions will be linked by index
         List<CellValue[]> rows = new ArrayList<>();
         int[][] rowConstraints = input.getRowConstraints();
+        int[][] columnConstraints = input.getColumnConstraints();
         List<CellValue[][][]> solutionsPerRow = new ArrayList<>();
 
+        //collect all possible column solutions for every row
         for (int i = 0; i < input.getRow(0).length; i++) {
             rows.add(input.getRow(i));
-
-            solutionsPerRow.add(findIntersectingSolutions());
+            solutionsPerRow.add(findIntersectingSolutions(rowConstraints[i], columnConstraints, i, input.getSize()));
         }
 
 
