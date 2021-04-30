@@ -14,10 +14,13 @@ class NonogramSolver {
 
     public static CellValue[][] solveBoard(Board input) {
         //rows and their intersecting solutions will be linked by index
-        List<CellValue[]> rows = new ArrayList<>();
         int[][] rowConstraints = input.getRowConstraints();
         int[][] columnConstraints = input.getColumnConstraints();
+        List<CellValue[]> rows = new ArrayList<>();
         List<CellValue[][][]> solutionsPerRow = new ArrayList<>();
+
+        //find a guaranteed row to anchor the algorithm to
+
 
         //collect all possible column solutions for every row
         for (int i = 0; i < input.getRow(0).length; i++) {
@@ -26,6 +29,25 @@ class NonogramSolver {
         }
 
 
+        //the possible column solutions for the first row must contain the solution for the whole board,
+        // or else it is not solvable.
+
+        int s = input.getSize();
+        for (int a = 0; a < rows.size(); a++) {
+            for (int b = 0; b < rows.size(); b++) {
+                CellValue[][][] firstRowIntersectingSolutions = new CellValue[s][s][s];
+                for (int c = 0; c < rows.size(); c++) {
+                    CellValue[][] possibleSolutions = new CellValue[s][s];
+                    for (int d = 0; d < rows.size(); d++) {
+
+                    }
+                }
+            }
+        }
+
+        //at this point we should have intersecting solutions that are valid for the first row. This should filter out
+        // most possible board solutions, and now we can repeat the process.
+        // If we run out of rows before we hit one board solution, then the board has 2 possible solutions
     }
 
     //Each row will intersect every column, and vice versa. This means their constraints affect each other. Compare the
@@ -169,6 +191,23 @@ class NonogramSolver {
         return Pattern.matches(patternString, attemptString);
     }
 
+    //build the smallest possible line that still satisfies the given constraints
+    public static CellValue[] buildMinimumLine(int[] constraints, int boardSize){
+        List<CellValue> result = new ArrayList<>();
+        if(minimumSpaceRequired(constraints) == boardSize){
+            for(int i=0;i<constraints.length-1;i++){
+                result.addAll(buildSequence(CellValue.FILLED,constraints[i]));
+                result.add(CellValue.OPEN);
+            }
+
+            result.addAll(buildSequence(CellValue.FILLED, constraints[constraints.length-1]));
+
+            return result.toArray(new CellValue[0]);
+        }else{
+            return null;
+        }
+    }
+
     public static CellValue[] buildLine(int[] constraints, int[] spacing, int boardSize) {
         int totalSquares = Arrays.stream(constraints).sum() + Arrays.stream(spacing).sum();
         if ((totalSquares > boardSize) || (totalSquares < 0)) {
@@ -202,6 +241,36 @@ class NonogramSolver {
         }
 
         return results;
+    }
+
+    //try to find a guaranteed line with the given constraints
+    public static CellValue[] lineHeuristics(int[][] constraints, int boardSize) {
+        //if we have a line that is completely filled by the constraint, it is guaranteed
+        int guaranteedIndex = -1;
+        for (int i = 0; i < constraints.length; i++) {
+            if (minimumSpaceRequired(constraints[i]) == boardSize) {
+                guaranteedIndex = i;
+                break;
+            }
+        }
+
+        if(guaranteedIndex >= 0){
+            int[] spacing = new int[]
+            return buildLine(constraints[guaranteedIndex],)
+        }
+
+    }
+
+    //return the minimum number of squares required to fulfill the given constraint
+    public static int minimumSpaceRequired(int[] constraint) {
+        int total = 0;
+        for (int el : constraint) {
+            total += el;
+        }
+
+        total += constraint.length - 1;
+
+        return total;
     }
 
     //count instances of <value> in <array>
